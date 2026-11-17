@@ -13,6 +13,7 @@ not been added yet. The diagrams describe a starting proposal, not a running sys
 
 - [Architecture proposal](docs/design/architecture.md): scope, boundaries, and open questions.
 - [Fishing requirements](docs/design/fishing-requirements.md): agreed mechanics and acceptance scenarios.
+- [Postman integration plan](docs/design/postman-integration.md): OpenAPI import, workflow smoke tests, and future CI execution.
 - [Design documentation workflow](docs/design/README.md): write and render PlantUML locally.
 - [License research](docs/licensing.md): MIT, BSD, GPL, and the implications for a hosted API.
 
