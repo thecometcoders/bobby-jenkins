@@ -1,0 +1,23 @@
+@startuml
+title Bobby Jenkins - proposed request flow
+
+actor "Client" as Client
+participant "FastAPI API boundary" as API
+participant "Application logic" as Logic
+
+Client -> API : HTTP request (endpoint to be defined)
+API -> API : Validate request against schema
+alt Invalid request input
+  API --> Client : 422 validation error (FastAPI default)
+else Valid request input
+  API -> Logic : Execute agreed workflow
+  Logic --> API : Successful result
+  API --> Client : Success response (contract to be defined)
+end
+
+note over API, Logic
+  Logical responsibilities within one application.
+  Domain errors, access control, and operational
+  failures need contracts before implementation.
+end note
+@enduml

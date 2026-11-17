@@ -1,0 +1,18 @@
+@startuml
+title Bobby Jenkins - proposed system context
+top to bottom direction
+
+actor "Barracuda Fishing user" as User
+rectangle "Client application\n(type to be decided)" as Client
+rectangle "Bobby Jenkins\nPython / FastAPI backend" as Backend
+
+User --> Client : Uses
+Client --> Backend : HTTP API requests\nHTTPS outside local development
+Backend --> Client : API responses
+
+note bottom of Backend
+  Proposal only; no application code yet.
+  Workflows, storage, authentication, and
+  external integrations remain undecided.
+end note
+@enduml
