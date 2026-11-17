@@ -7,6 +7,7 @@ Use PlantUML (`.puml`) for diagrams stored and reviewed alongside those document
 
 - [Architecture proposal](architecture.md)
 - [Agreed fishing requirements](fishing-requirements.md)
+- [Postman integration plan](postman-integration.md)
 - [Fishing workflow source](diagrams/fishing-workflow.puml)
 - [System context source](diagrams/system-context.puml)
 - [Request flow source](diagrams/request-flow.puml)

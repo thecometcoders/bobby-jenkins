@@ -162,6 +162,11 @@ Define request/response schemas and success and failure behavior for each
 implemented workflow. Input validation belongs at the API boundary; domain rules
 belong in application logic where separation is useful.
 
+The [Postman integration plan](postman-integration.md) describes importing the
+future FastAPI OpenAPI schema into a version-controlled collection, maintaining
+workflow assertions, and running an isolated smoke test with Newman in CI.
+It is planned tooling, not an implemented integration or an endpoint contract.
+
 ### 8.2 Authentication, authorization, and privacy
 
 Authentication and authorization remain unresolved and must be designed before
@@ -216,6 +221,10 @@ The [fishing acceptance scenarios](fishing-requirements.md#acceptance-scenarios)
 cover random-wait boundaries, fixed per-catch thresholds, fresh setup, and exact
 status-query responses. Tests should control time and randomness rather than
 sleeping or relying on chance.
+
+The planned [Postman workflow smoke test](postman-integration.md#fishing-workflow-smoke-test)
+complements those deterministic Python tests with a real-time API run using
+bounded polling. It does not establish exact timing boundaries or random coverage.
 
 These are planned acceptance checks, not evidence of passing application tests.
 Agree on measurable service-level targets before introducing performance or
