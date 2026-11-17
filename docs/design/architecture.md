@@ -20,8 +20,9 @@ The first user workflow is agreed: set up a pole, cast, wait for a random bite,
 pull until caught, and query the barracuda's exact `"screaming"` status.
 The [fishing requirements](fishing-requirements.md) record the default timing,
 pull thresholds, HTTP status behavior, and acceptance scenarios.
-These requirements are not implemented. Catch logs, trip planning, and location
-features are not committed requirements.
+These requirements are not implemented. Catch history and release are agreed;
+trip planning and location features are not committed requirements.
+The [API skeleton](api-contract.md) proposes endpoint and retry contracts.
 
 ### 1.2 Quality goals
 

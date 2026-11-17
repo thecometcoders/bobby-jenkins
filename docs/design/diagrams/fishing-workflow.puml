@@ -6,15 +6,23 @@ state "Ready to cast" as Ready
 state "Waiting for bite" as Waiting
 state "Barracuda on the line" as OnLine
 state "Barracuda caught" as Caught
+state "Barracuda escaped" as Escaped
+state "Released (history retained)" as Released
+state "Resolve once" as Resolve <<choice>>
 
 [*] --> SetupRequired
 SetupRequired --> Ready : Equip pole with tackle and bait
 Ready --> Waiting : Cast / select wait duration
 Waiting --> OnLine : Wait elapses / progress = 0;\nselect required pulls
 OnLine --> OnLine : Pull [progress + 1 < threshold]\n/ progress += 1
-OnLine --> Caught : Pull [progress + 1 >= threshold]\n/ progress += 1
+OnLine --> Resolve : Pull [progress + 1 >= threshold]\n/ progress += 1
+Resolve --> Caught : 40% / archive catch
+Resolve --> Escaped : 60%
 Caught --> Caught : Query status / HTTP 200\n{"status": "screaming"}
 Caught --> SetupRequired : Begin another attempt
+Escaped --> SetupRequired : Begin another attempt
+Caught --> Released : Release / live status becomes HTTP 404
+Released --> SetupRequired : Begin another attempt
 
 note right of Waiting
   Default random wait: 5-10 seconds.
@@ -24,6 +32,7 @@ end note
 note right of OnLine
   Default required pulls: integer 1-4 inclusive.
   Select once per bite; keep fixed for the catch.
+  Show current progress only, never the threshold.
   Uncaught barracuda status queries return HTTP 404.
 end note
 @enduml

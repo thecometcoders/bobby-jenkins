@@ -10,8 +10,9 @@ Endpoint paths, persistence, and implementation mechanisms are not selected here
 
 A fisher heads to a lake containing barracudas, sets up a pole with tackle and
 bait, and casts. After a random wait, a barracuda takes the bait. The fisher pulls
-the line until the barracuda is caught. Asking a caught barracuda for its status
-always returns the exact value `"screaming"`.
+the line until the attempt resolves as caught or escaped. Asking an owned,
+caught barracuda that has not been released for its status always returns the
+exact value `"screaming"`.
 
 ## Functional requirements
 
@@ -22,9 +23,12 @@ always returns the exact value `"screaming"`.
 | FR-03 | Casting shall require a completed, fresh setup. A cast uses that setup; another cast requires setup again. Casting without a fresh setup shall be rejected. |
 | FR-04 | On each cast, the system shall randomly select a waiting duration using the default bounds below. Before it elapses, the attempt shall remain waiting. When it elapses, a barracuda shall bite. |
 | FR-05 | A bite shall put a barracuda on the line, not immediately catch it. At the bite, the system shall initialize progress to zero and randomly select a required pull count using the default bounds below. That threshold shall remain fixed for that catch. |
-| FR-06 | Each valid pull after the bite shall add one progress point. When progress reaches or exceeds the selected threshold, the barracuda shall become caught. |
-| FR-07 | A successful status query for a caught barracuda shall return HTTP `200` with the JSON body `{"status": "screaming"}`. The exact value shall remain unchanged across repeated queries. |
-| FR-08 | A status query for a nonexistent or not-yet-caught barracuda shall return HTTP `404`. The error body is not yet specified. |
+| FR-06 | Each valid pull after the bite shall add one progress point. When progress reaches the selected threshold, resolve the attempt once: 40% caught, 60% escaped. Do not reroll on individual pulls or retries. |
+| FR-07 | A successful status query for an owned, caught barracuda that has not been released shall return HTTP `200` with the JSON body `{"status": "screaming"}`. The exact value shall remain unchanged across repeated queries before release. |
+| FR-08 | A status query for a nonexistent, not-yet-caught, released, or other-owned barracuda shall return HTTP `404`. The error body is not yet specified. |
+| FR-09 | A fisher shall own and exclusively access their attempts and catches, with at most one active attempt at a time. Caught and escaped outcomes end the attempt. |
+| FR-10 | Clients shall see current progress, not the required pull threshold. Mutating actions shall prevent duplicate effects using idempotency keys; setup may instead use an idempotent PUT. |
+| FR-11 | Successful catches shall enter catch history automatically. Releasing a catch shall preserve history while making its live status unavailable. |
 
 ## Default mechanics
 
@@ -54,13 +58,13 @@ these defaults can be configured remain unspecified.
 | Ready to cast | Cast | Waiting for bite; select the wait duration |
 | Waiting for bite | Selected duration elapses | Barracuda on the line; set progress to zero and select the catch threshold |
 | Barracuda on the line | Pull; new progress is below threshold | Remain on the line with increased progress |
-| Barracuda on the line | Pull; new progress reaches threshold | Barracuda caught |
+| Barracuda on the line | Pull; new progress reaches threshold | Resolve once: 40% caught, 60% escaped; attempt ends |
 | Barracuda caught | Query status | Return `200` and `{"status": "screaming"}`; remain caught |
 | Barracuda caught | Begin another fishing attempt | Setup required for the next cast |
 
 Requiring setup again does not, by itself, require finite inventory, bait
-consumption, or tackle loss. Beginning another attempt does not define how long a
-previously caught barracuda remains addressable; retention remains open.
+consumption, or tackle loss. Either terminal outcome permits a new attempt.
+Record retention duration remains open; release preserves catch history.
 
 ## Acceptance scenarios
 
@@ -88,9 +92,10 @@ Boundary tests shall also exercise selected waits of 5 and 10 seconds.
 
 Given a bite with a test-controlled threshold of 3 pulls and zero progress,
 when the fisher pulls twice, then progress is 2 and the barracuda is not caught.
-When they pull a third time, then the barracuda is caught.
+When they pull a third time, then the attempt resolves using a controlled outcome:
+a catch for the success case, an escape for the failure case.
 The threshold is selected only at the bite, not again during those pulls.
-Boundary tests shall also verify catches requiring 1 and 4 pulls.
+Boundary tests shall also verify resolution requiring 1 and 4 pulls.
 
 ### AC-05: Return the exact caught status repeatedly (FR-07)
 
@@ -118,11 +123,12 @@ decision, not an additional game rule.
 - Endpoint paths, resource identifiers, and response contracts other than the
   specified status query.
 - Rejection behavior for pulls before a bite or after a catch, repeated setup,
-  and casts while an attempt is active.
-- Whether multiple attempts may be active, and how concurrent or retried requests
-  are handled.
+  and casts while an attempt is active; see the proposed
+  [API contract](api-contract.md).
+- Detailed concurrency and retry contracts, including idempotency retention.
 - Cancellation, abandonment, escape, and timeout behavior; none is required yet.
 - Random sampling distribution, time precision, and configuration interface.
-- Persistence, caught-barracuda retention, identity, and access rules.
+- Persistence, retention duration, and authentication mechanism. Ownership and
+  exclusive access are agreed; technical enforcement remains to be designed.
 - Lake selection, inventory, additional equipment types, and location features
   are not part of the agreed initial mechanics.
