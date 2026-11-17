@@ -1,0 +1,23 @@
+[project]
+name = "bobby-jenkins"
+version = "0.1.0"
+description = "Backend for Barracuda Fishing"
+readme = "README.md"
+requires-python = ">=3.14,<3.15"
+dependencies = []
+
+[build-system]
+requires = ["uv_build>=0.13.6,<0.14"]
+build-backend = "uv_build"
+
+[tool.ruff]
+target-version = "py314"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.2.0",
+    "ruff>=0.17.5",
+]

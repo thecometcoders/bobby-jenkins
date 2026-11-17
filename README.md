@@ -5,12 +5,14 @@ to provide a backend for Barracuda Fishing.
 
 ## Project status
 
-This repository currently contains project documentation and proposed designs.
-Application code, dependencies, API endpoints, and deployment configuration have
-not been added yet. The diagrams describe a starting proposal, not a running system.
+This repository contains project documentation and a uv-managed Python package
+scaffold with development checks. FastAPI application code, API endpoints, and
+deployment configuration have not been added yet. The diagrams describe a
+starting proposal, not a running system.
 
 ## Documentation
 
+- [Development workflow](docs/development.md): uv setup, branches, dependencies, and releases.
 - [Architecture proposal](docs/design/architecture.md): scope, boundaries, and open questions.
 - [Fishing requirements](docs/design/fishing-requirements.md): agreed mechanics and acceptance scenarios.
 - [Design documentation workflow](docs/design/README.md): write and render PlantUML locally.
@@ -18,10 +20,18 @@ not been added yet. The diagrams describe a starting proposal, not a running sys
 
 ## Getting started
 
-Start with the agreed fishing requirements and the architecture proposal.
-The first workflow is defined, but endpoint design remains open. There is no
-application installation or startup command yet; those instructions will be
-added with the FastAPI scaffold.
+Install uv 0.13.6, then set up the Python 3.14 development environment:
+
+```sh
+uv sync --locked
+uv run --locked pytest
+uv run --locked ruff check .
+uv run --locked ruff format --check .
+```
+
+See the [development workflow](docs/development.md) for tool installation,
+branching, dependency changes, and release versioning. The first user workflow
+is defined, but endpoint design remains open; there is no server startup command yet.
 
 To work on design documents, install PlantUML and Graphviz and follow the
 [local rendering instructions](docs/design/README.md#render-diagrams-locally).
