@@ -1,2 +1,12 @@
 # Locally rendered design diagrams; keep PlantUML sources in version control.
 /docs/design/diagrams/rendered/
+
+# Python environments, caches, and build output.
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+/build/
+/dist/
