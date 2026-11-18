@@ -47,3 +47,4 @@ Do not put credentials, real user records, or sensitive fishing locations in exa
 No project license has been selected. Publicly accessible source is not, by itself,
 an open-source license grant. See the [license comparison](docs/licensing.md)
 before deciding how to license or reuse the project.
+
